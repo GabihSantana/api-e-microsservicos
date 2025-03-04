@@ -5,23 +5,39 @@
 package lista;
 
 import java.util.Arrays;
+import java.util.Scanner;
 
 public class Exercicio1 {
 
 	public static void main(String[] args) {
-		
-		// estabelecendo as variáveis
-		Double a = 2.0;
-		Double b = 7.0;
-		Double c = 5.0;
-		Double delta;
+		Scanner teclado = new Scanner(System.in);
+
+		Double a, b, c, delta;
 		Double[] raiz;
 		
-		delta = calcularDelta(a, b, c);
+		//Double a = 2.0; Double b = 7.0; Double c = 5.0; Double delta; 
+		try {
+			System.out.println("Digite o valor de A: ");
+			a = teclado.nextDouble();
+
+			System.out.println("Digite o valor de B: ");
+			b = teclado.nextDouble();
+
+			System.out.println("Digite o valor de C: ");
+			c = teclado.nextDouble();
+			
+			delta = calcularDelta(a, b, c);
+			
+			raiz = calcularRaiz(b, delta, a);
+			
+			System.out.println(Arrays.toString(raiz));
+
+
+		} catch (Exception e) {
+			System.out.println("Erro - Inserção inválida! " + e);
+		}
 		
-		raiz = calcularRaiz(b, delta, a);
-		
-		System.out.println(Arrays.toString(raiz));
+		teclado.close();
 	}
 	
 	public static Double calcularDelta(double a, double b, double c){

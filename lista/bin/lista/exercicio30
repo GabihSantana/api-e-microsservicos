@@ -1,0 +1,15 @@
+30. Qual	a	diferença	entre	abstração,	encapsulamento	e	modularidade?	
+
+ - Abstração: A abstração se refere a indisponibilidade para determinar a lógica de um ou vários comportamentos em
+ 			um objeto, ou seja, oculta detalhes do código. É implementada através das classes;
+ 
+ - Encapsulamento: O Encapsulamento se refere a proteção dos dados internos de um objeto. O acesso desses
+ 				dados é permitido apenas através de métodos públicos, aumentando a segurança e a clareza do código.
+ 				em Java, são utilizados os *modificadores de acesso*:
+ 					public -> acessível de qualquer lugar;
+ 					private -> acessível apenas dentro da própria classe;
+ 					protected -> acessível na classe, no mesmo pacote ou subclasses;
+ 					default -> acessível no mesmo pacote
+ 					
+ - Modularidade: A modularidade é a divisão do código em módulos com responsabilidades preferencialmente únicas,
+ 				facilitando a manutenção e a compreensão do código.

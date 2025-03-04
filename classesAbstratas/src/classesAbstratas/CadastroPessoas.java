@@ -5,32 +5,33 @@ import java.util.List;
 
 public class CadastroPessoas {
 	private int qtdAtual;
-	private static List<Pessoa> pessoas = new ArrayList<>();
+	private List<Pessoa> pessoas = new ArrayList<>();
 	
-	public CadastroPessoas(int qtdAtual) {
-		this.qtdAtual = qtdAtual;
+	public CadastroPessoas() {
 	}
 
 	public List<Pessoa> getPessoa() {
 		return new ArrayList<>(pessoas);
 	}
 	
-	public static void cadastraPessoa(Pessoa pessoa) {
+	public void cadastraPessoa(Pessoa pessoa) {
 		pessoas.add(pessoa);
 	}
 	
-	public static void imprimeCadastro() {
+	public void imprimeCadastro() {
+		System.out.println("Quantidade de Cadastros: " + getQtdAtual());
 		for(Pessoa pessoa : pessoas) {
 			System.out.println(pessoa);
 		}
 	}
 
 	public int getQtdAtual() {
+		try {
+			qtdAtual = pessoas.size();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return qtdAtual;
 	}
 
-	public void setQtdAtual(int qtdAtual) {
-		this.qtdAtual = qtdAtual;
-	}
-	
 }

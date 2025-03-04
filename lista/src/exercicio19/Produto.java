@@ -44,7 +44,19 @@ public class Produto {
 	}
 
 	public void setQuantidadeEstoque(int quantidadeEstoque) {
-		this.quantidadeEstoque = quantidadeEstoque;
-	}
+		if (quantidadeEstoque < 0) {
+            throw new IllegalArgumentException("\n Estoque não pode ser negativo");
+        }
+        this.quantidadeEstoque = quantidadeEstoque;	
+    }
+	
+    public boolean temEstoqueSuficiente(int quantidade) {
+        return quantidade <= quantidadeEstoque;
+    }
+	
+    @Override
+    public String toString() {
+        return "Produto: " + getNome() + "\nPreço: " + getPreco() + "\nEstoque: " + getQuantidadeEstoque();
+    }
 
 }

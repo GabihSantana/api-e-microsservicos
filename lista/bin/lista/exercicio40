@@ -1,0 +1,7 @@
+40. Qual	a	diferença	entre	o	método	sleep()	e	o	método	join()	da	classe	Thread?	
+
+> sleep(): Suspende a execução do thread atual por um tempo. Esse método leva um número de milissegundos com argumento,
+		o que indica a quantidade de tempo para colocar o thread em hibernação
+
+> join(): Suspende a execução do thread atual até que o outro thread termine. É utilizado para garantir a ordem de 
+		execução dos threads.

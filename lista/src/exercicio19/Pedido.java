@@ -4,34 +4,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Pedido {
-    private List<Produto> itens;
-	private int quantidade;
+	private List<Item> itens;
 	private Pagamento pagamento;
 
 	public Pedido() {
-		
+		this.itens = new ArrayList<>();
 	}
 
-	public Pedido(List<Produto> itens, int quantidade, Pagamento pagamento) {
-		this.itens = itens;
-		this.quantidade = quantidade;
+	public Pedido(Pagamento pagamento) {
 		this.pagamento = pagamento;
-	}
-	
-	public List<Produto> getItens() {
-	    return new ArrayList<>(itens);
+		this.itens = new ArrayList<>();
 	}
 
-    public void adicionarItem(Produto item) {
-        itens.add(item);
-    }
-
-	public int getQuantidade() {
-		return quantidade;
+	public List<Item> getItens() {
+		return new ArrayList<>(itens);
 	}
 
-	public void setQuantidade(int quantidade) {
-		this.quantidade = quantidade;
+	public void adicionarItem(Item item) {
+		item.estoque(); 
+		if (item.getProduto().temEstoqueSuficiente(item.getQuantidade())) {
+			itens.add(item);
+		} else {
+			System.out.println("\nErro: Não foi possível adicionar o produto " + item.getProduto().getNome());
+		}
 	}
 
 	public Pagamento getPagamento() {
@@ -40,6 +35,17 @@ public class Pedido {
 
 	public void setPagamento(Pagamento pagamento) {
 		this.pagamento = pagamento;
+	}
+
+	public void mostrarPedido() {
+		double preco = 0;
+		System.out.println(" ********* PEDIDO **********");
+		for (Item item : itens) {
+			System.out.println("\n" + item);
+			preco += item.getProduto().getPreco() * item.getQuantidade();
+		}
+		System.out.println("\n\nForma de pagamento: " + getPagamento());
+		System.out.println("\n VALOR: " + preco);
 	}
 
 }

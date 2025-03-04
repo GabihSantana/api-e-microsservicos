@@ -1,17 +1,12 @@
 package exercicio21;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
-import exercicio20.Contato;
 
 public class Emprestimo {
 	private Livro livro;
 	private Pessoa pessoa;
 	private LocalDate dataEmprestimo;
 	private LocalDate dataDevolucao;
-	private List<Livro> livrosEmprestimos = new ArrayList<>();
 
 	public Emprestimo() {
 	}
@@ -21,15 +16,6 @@ public class Emprestimo {
 		this.pessoa = pessoa;
 		this.dataEmprestimo = dataEmprestimo;
 		this.dataDevolucao = dataDevolucao;
-	}
-
-	public List<Livro> getLivroEmprestados() {
-		return new ArrayList<>(livrosEmprestimos);
-	}
-
-	public void adicionarLivro(Livro livro) {
-		livrosEmprestimos.add(livro);
-		livro.setDisponivel(false);
 	}
 
 	public Livro getLivro() {
@@ -66,9 +52,7 @@ public class Emprestimo {
 
 	@Override
 	public String toString() {
-		return "\n Empréstimo do livro " + livro.getTitulo() + " para " + pessoa.getNome() + " | Data de Empréstimo: "
-				+ dataEmprestimo + " | Data de Devolução: "
-				+ dataDevolucao;
+		return "Pessoa: " + pessoa.getNome() + "\nLivro: " + livro.getTitulo() + "\nData Empréstimo: " + dataEmprestimo
+				+ "\nData Devolução: " + dataDevolucao;
 	}
-
 }

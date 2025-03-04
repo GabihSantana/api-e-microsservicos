@@ -1,0 +1,14 @@
+39. Para	que	serve	o	modificador	synchronized?	Em	que	situações	ele	deve	ser	usado?	Por	que	
+não	usar	em	todos	os	métodos	do	programa?	
+
+> O modificador	synchronized permite o controle de acesso a determinados métodos ou blocos de código, garantindo
+	a integridade dos dados, a sincronização de rotinas e a atomicidade na execução de trechos de código dentro de
+	um programa multitarefa, ou seja, controla o acesso a recursos compartilhados entre vários threads. Esse modificador
+	evita a interferências de threads e garante a consistência da memória. Quando um método ou bloco é declarado como 
+	sincronizado, um bloqueio é obtido no objeto especificado, e outros threads são impedidos de acessar o código 
+	sincronizado até que o bloqueio seja liberado.
+	
+	Ele não deve ser usado em todos os métodos devido a diminuição de desempenho, deadlocks (onde duas ou mais threads ficam
+	bloqueadas esperando umas pelas outras para liberar retursos, levando o programa a ficar parado) e por conta do escopo
+	de sincronização, nem todo método precisa ser sincronizado, e isso também leva a um design de software mais complexo
+	e difícil de manter.

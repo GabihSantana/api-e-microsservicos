@@ -16,19 +16,17 @@ public class Funcionario extends Pessoa {
 		this.salario = salario;
 	}
 
-	public static double calculaImposto() {
-		double imposto = 0.0;
-
-		return imposto;
+	public double calculaImposto() {
+	    return this.salario * 0.03;
 	}
 
 	@Override
 	public void imprimeDados() {
-
+		System.out.println("Dados do Funcionário: \nNome: " + super.getNome() + ", Salário: " + getSalario() + ", Data de Nascimento: " + super.getNascimento());
 	}
 
 	public String toString() {
-	    return "\nFuncionario - Nome: " + getNome() + ", Salário: " + salario + ", Data de Nascimento: " + getNascimento();
+	    return "\nFuncionario - Nome: " + super.getNome() + ", Salário: " + getSalario() + ", Data de Nascimento: " + super.getNascimento();
 	}
 	
 }

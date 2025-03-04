@@ -1,0 +1,8 @@
+32. Qual	a	diferença	entre	uma	exceção	(subclasses	de	Exception)	e	um	erro	(subclasses	de	
+Error)?	
+
+> Exceção: As exceções ocorrem durante a execução e podem ser tratadas e/ou lançadas para o programa continuar funcionando,
+		utilizando blocos try, catch e finally.
+
+> Erro: Os erros ocorrem quando o problema não pode ser tratado ou lançado, ou seja, não tem uma solução / alternativa, é
+		um erro que deve ser resolvido.
