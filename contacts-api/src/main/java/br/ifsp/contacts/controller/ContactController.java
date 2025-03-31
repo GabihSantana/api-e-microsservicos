@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,13 +16,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.ifsp.contacts.exception.ResourceNotFoundException;
 import br.ifsp.contacts.model.Address;
 import br.ifsp.contacts.model.Contact;
-import br.ifsp.contacts.repository.AddressRepository;
 import br.ifsp.contacts.repository.ContactRepository;
-import exception.ResourceNotFoundException;
 import jakarta.validation.Valid;
 
 /**
@@ -111,7 +112,8 @@ public class ContactController {
 	 *              enviados no corpo da requisição.
 	 */
 	@PostMapping
-	public Contact createContact(@Valid @RequestBody Contact contact) {
+    @ResponseStatus(HttpStatus.CREATED)
+	public Contact createContact(@RequestBody @Valid Contact contact) {
 		return contactRepository.save(contact);
 	}
 
@@ -122,7 +124,7 @@ public class ContactController {
 	 *             acesso: PUT /api/contacts/1
 	 */
 	@PutMapping("/{id}")
-	public Contact updateContact(@PathVariable Long id, @Valid @RequestBody Contact updatedContact) {
+	public Contact updateContact(@PathVariable Long id, @RequestBody @Valid Contact updatedContact) {
 		// Buscar o contato existente
 		Contact existingContact = contactRepository.findById(id)
 				.orElseThrow(() -> new RuntimeException("Contato não encontrado: " + id));
@@ -158,7 +160,7 @@ public class ContactController {
 	 * 
 	 */
 	@PatchMapping("/{id}")
-	public Contact updateContactFields(@PathVariable Long id, @Valid @RequestBody Map<String, String> fields) {
+	public Contact updateContactFields(@PathVariable Long id, @RequestBody @Valid Map<String, String> fields) {
 		// Buscar o contato existente
 		Contact existingContact = contactRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Contato não encontrado com o ID: " + id));

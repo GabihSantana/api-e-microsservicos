@@ -1,7 +1,7 @@
 package br.ifsp.contacts.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,6 +25,13 @@ public class Address {
     @NotBlank(message = "A cidade não pode estar vazia")
 	private String cidade;
     
+    
+    /**
+     * @NotBlank 	garante que os dados não sejam brancos antes de serem persistidos
+     * @Size 		define o tamanho máx e min que deve conter
+     * @Pattern		realiza a verificação via regex do formato do campo
+     */
+    
     @NotBlank(message = "O estado não pode estar vazio")
     @Size(min = 2, max = 2, message = "O estado deve ter exatamente 2 caracteres (sigla)")
     @Pattern(regexp = "[A-Z]{2}", message = "O estado deve ser representado por duas letras maiúsculas")
@@ -34,26 +41,30 @@ public class Address {
     @Pattern(regexp = "\\d{5}-\\d{3}", message = "O CEP deve estar no formato 99999-999")
 	private String cep;
     
+    /**
+     * @ManyToOne			Define a relação com a classe Contac, com a coluna contact_id no banco de dados
+     * @JoinColumn			
+     * @JsonBackReference	é usado para evitar problemas de referência cíclica ao serializar os objetos para JSON.
+     */
+    
 	@ManyToOne 
 	@JoinColumn(name = "contact_id", nullable = false)
-	
-	/**
-	 * @JsonBackReference é utilizado para evitar o loop ao serializar os objetos (Contact e Address) para JSON
-	 */
     @JsonBackReference
 	private Contact contact;
 
 	public Address() {
 	}
 
-	public Address(Long id, String rua, String cidade, String estado, String cep, Contact contact) {
-		super();
-		this.id = id;
+	public Address(String rua, String cidade, String estado, String cep, Contact contact) {
 		this.rua = rua;
 		this.cidade = cidade;
 		this.estado = estado;
 		this.cep = cep;
 		this.contact = contact;
+	}
+	
+	public Long getId() {
+		return id;
 	}
 
 	public String getRua() {

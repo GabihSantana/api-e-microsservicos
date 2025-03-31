@@ -8,10 +8,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import br.ifsp.contacts.model.Address;
 
 /**
- * Esta interface extende JpaRepository, que nos fornece métodos prontos 
- * para acessar e manipular dados no banco de dados. Basta especificar 
- * a classe de entidade (Address) e o tipo da chave primária (Long).
+ * A interface estende JpaRepository<Address, Long>, 
+ * o que significa que herda todos os métodos básicos de manipulação 
+ * (save(), delete(), findById(), etc.).
  */
+
 public interface AddressRepository extends JpaRepository<Address, Long>{
+	// recuperar endereços associados a um contato específico
     List<Address> findByContactId(Long contactId);
 }

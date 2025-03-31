@@ -3,8 +3,8 @@ package br.ifsp.contacts.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.validation.constraints.NotBlank;
-
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -13,7 +13,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
@@ -47,9 +46,18 @@ public class Contact {
 	@Email(message = "O e-mail deve ser válido!")
 	private String email;
 
+	/**
+	 * @OneToMany o contato pode ter vários endereços
+	 * mappedBy = "contact" indica que o relacionamento é mapeado pelo atributo contact na classe Address
+	 * cascade = CascadeType.ALL: Propaga todas as operações (persistência, remoção, atualização) feitas na 
+	 *  							entidade Contact para os seus endereços relacionados.
+	 * orphanRemoval = true: Remove automaticamente os endereços que são removidos da lista addresses.
+	 * @JsonManagedReference: Trabalha junto com @JsonBackReference na classe Address 
+	 * 							para evitar problemas de serialização cíclica (loop infinito) 
+	 * 							quando os objetos são convertidos para JSON.
+	 */
+	
 	@OneToMany(mappedBy = "contact", cascade = CascadeType.ALL, orphanRemoval = true)
-	// evitar o loop por conta do relacionamento bidirecional ->
-	// @JsonManagedReference é colocado onde a serialização ocorre
 	@JsonManagedReference
 	private List<Address> addresses = new ArrayList<>();
 
@@ -67,19 +75,6 @@ public class Contact {
 	// Getters e Setters
 	public List<Address> getAddresses() {
 		return addresses;
-	}
-
-	public void setAddresses(List<Address> addresses) {
-		if (addresses != null) {
-			addresses.forEach(address -> address.setContact(this));
-
-			if (this.addresses == null) {
-				this.addresses = new ArrayList<>();
-			}
-
-			this.addresses.clear();
-			this.addresses.addAll(addresses);
-		}
 	}
 
 	public Long getId() {
@@ -108,5 +103,23 @@ public class Contact {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	// implementado de forma a garantir que todos os endereços associados a este contato estejam sincronizados
+	public void setAddresses(List<Address> addresses) {
+		if (addresses != null) {
+							// garante que o relacionamento bidirecional seja atualizado
+			addresses.forEach(address -> address.setContact(this));
+
+			// se for nula, inicializa
+			if (this.addresses == null) {
+				this.addresses = new ArrayList<>();
+			}
+
+			// limpa a lista de endereços atuais -> evita duplicação
+			this.addresses.clear();
+			// os novos endereços sao adicionados
+			this.addresses.addAll(addresses);
+		}
 	}
 }
