@@ -5,6 +5,8 @@ import java.util.List;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -59,6 +61,7 @@ public class Contact {
 	
 	@OneToMany(mappedBy = "contact", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
+	@NotEmpty(message = "O contato deve ter pelo menos um endereço")
 	private List<Address> addresses = new ArrayList<>();
 
 	// Construtor vazio exigido pelo JPA

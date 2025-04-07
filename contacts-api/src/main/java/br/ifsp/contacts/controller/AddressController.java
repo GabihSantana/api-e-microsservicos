@@ -2,7 +2,10 @@ package br.ifsp.contacts.controller;
 
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.ifsp.contacts.dto.address.AddressResponseDTO;
 import br.ifsp.contacts.exception.ResourceNotFoundException;
 import br.ifsp.contacts.model.Address;
 import br.ifsp.contacts.model.Contact;
@@ -32,6 +36,9 @@ import jakarta.validation.Valid;
 public class AddressController {
 	@Autowired
 	private AddressRepository addressRepository;
+	
+	@Autowired
+    private ModelMapper modelMapper;
 	
     @Autowired
     private ContactRepository contactRepository;
@@ -55,11 +62,9 @@ public class AddressController {
 	}
 	
     @GetMapping("/contacts/{contactId}")
-    public List<Address> getAddressesByContact(@PathVariable Long contactId) {
-        Contact contact = contactRepository.findById(contactId)
-                .orElseThrow(() -> new ResourceNotFoundException("Contato não encontrado: " + contactId));
-        
-        return contact.getAddresses();
+    public Page<AddressResponseDTO> getAddressesByContact(@PathVariable Long contactId, Pageable pageable) {
+        return addressRepository.findByContactId(contactId, pageable)
+                .map(address -> modelMapper.map(address, AddressResponseDTO.class));
     }
 	
 }
