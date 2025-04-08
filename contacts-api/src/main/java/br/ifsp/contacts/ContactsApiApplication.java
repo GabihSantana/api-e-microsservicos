@@ -4,6 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
+
 /**
  * Classe principal da nossa aplicação Spring Boot.
  * 
@@ -13,6 +16,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
  * a aplicação.
  */
 
+@OpenAPIDefinition(info = @Info(title = "Contacts API", version = "1.0", description = "Documentação da API de Contatos"))
 @SpringBootApplication
 public class ContactsApiApplication {
 

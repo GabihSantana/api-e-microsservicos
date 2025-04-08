@@ -14,48 +14,33 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ContactPatchDTO {
-	private Optional<@NotBlank(message = "O nome não pode estar vazio!") String> nome = Optional.empty();
+	private Optional<String> nome = Optional.empty();
 	
-	private Optional<@NotBlank(message = "O email não pode estar vazio!") 
-					@Email(message = "O e-mail deve ser válido!") 
-					String> email = Optional.empty();
+	private Optional<String> email = Optional.empty();
 	
-	private Optional<@NotBlank(message = "O telefone não pode estar vazio!") 
-					@Size(min = 8, max = 15, message = "O telefone deve ter entre 8 e 15 caracteres") 
-					@Pattern(regexp = "\\d+", message = "O telefone deve conter apenas números") 
-					String> telefone = Optional.empty();
+	private Optional<String> telefone = Optional.empty();
 
-	public Optional<@NotBlank(message = "O nome não pode estar vazio!") String> getNome() {
+	public Optional<String> getNome() {
 		return nome;
 	}
 
-	public void setNome(Optional<@NotBlank(message = "O nome não pode estar vazio!") String> nome) {
+	public void setNome(Optional<String> nome) {
 		this.nome = nome;
 	}
 
-	public Optional<@NotBlank(message = "O email não pode estar vazio!") 
-					@Email(message = "O e-mail deve ser válido!") 
-					String> getEmail() {
+	public Optional<String> getEmail() {
 		return email;
 	}
 
-	public void setEmail(Optional<@NotBlank(message = "O email não pode estar vazio!") 
-					@Email(message = "O e-mail deve ser válido!") 
-					String> email) {
+	public void setEmail(Optional<String> email) {
 		this.email = email;
 	}
 
-	public Optional<@NotBlank(message = "O telefone não pode estar vazio!") 
-					@Size(min = 8, max = 15, message = "O telefone deve ter entre 8 e 15 caracteres") 
-					@Pattern(regexp = "\\d+", message = "O telefone deve conter apenas números") 
-					String> getTelefone() {
+	public Optional<String> getTelefone() {
 		return telefone;
 	}
 
-	public void setTelefone(Optional<@NotBlank(message = "O telefone não pode estar vazio!") 
-					@Size(min = 8, max = 15, message = "O telefone deve ter entre 8 e 15 caracteres") 
-					@Pattern(regexp = "\\d+", message = "O telefone deve conter apenas números") 
-					String> telefone) {
+	public void setTelefone(Optional<String> telefone) {
 		this.telefone = telefone;
 	}
 	

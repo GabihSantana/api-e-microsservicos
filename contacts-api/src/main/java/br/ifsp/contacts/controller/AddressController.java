@@ -22,6 +22,8 @@ import br.ifsp.contacts.model.Address;
 import br.ifsp.contacts.model.Contact;
 import br.ifsp.contacts.repository.AddressRepository;
 import br.ifsp.contacts.repository.ContactRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 /**
@@ -32,6 +34,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/addresses")
+@Tag(name = "Address", description = "Operações relacionadas a endereço")
 @Validated
 public class AddressController {
 	@Autowired
@@ -43,6 +46,7 @@ public class AddressController {
     @Autowired
     private ContactRepository contactRepository;
 	
+    @Operation(summary = "Criar um novo endereço a um contato existente")
     @PostMapping("/contacts/{contactId}")
     /**
      * @ResponseStatus indica que se o endereço for salvo com sucesso, o servidor retornará um código HTTP 201 (Created)
@@ -56,11 +60,13 @@ public class AddressController {
          return addressRepository.save(address);
 	}
 	
+    @Operation(summary = "Buscar todos os endereços")
 	@GetMapping
 	public List<Address> getAllAddress() {
 		return addressRepository.findAll();
 	}
 	
+    @Operation(summary = "Buscar todos os endereços pelo ID do contato")
     @GetMapping("/contacts/{contactId}")
     public Page<AddressResponseDTO> getAddressesByContact(@PathVariable Long contactId, Pageable pageable) {
         return addressRepository.findByContactId(contactId, pageable)

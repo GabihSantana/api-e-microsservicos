@@ -1,8 +1,6 @@
 package br.ifsp.contacts.controller;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -31,6 +29,8 @@ import br.ifsp.contacts.exception.ResourceNotFoundException;
 import br.ifsp.contacts.model.Address;
 import br.ifsp.contacts.model.Contact;
 import br.ifsp.contacts.repository.ContactRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 /**
@@ -44,6 +44,7 @@ import jakarta.validation.Valid;
  */
 @RestController
 @RequestMapping("/api/contacts")
+@Tag(name = "Contatos", description = "Operações relacionadas a contatos")
 @Validated
 public class ContactController {
 
@@ -51,12 +52,12 @@ public class ContactController {
 	 * @Autowired permite que o Spring "injete" automaticamente uma instância de
 	 *            ContactRepository aqui, sem que precisemos criar manualmente.
 	 */
-	@Autowired
-	private ContactRepository contactRepository;
 	
 	@Autowired
-    private ModelMapper modelMapper;
+	private ContactRepository contactRepository;
 
+	@Autowired
+	private ModelMapper modelMapper;
 
 	/**
 	 * Método para obter todos os contatos.
@@ -64,10 +65,11 @@ public class ContactController {
 	 * @GetMapping indica que este método vai responder a chamadas HTTP GET. Exemplo
 	 *             de acesso: GET /api/contacts
 	 */
+	
+    @Operation(summary = "Buscar todos os contatos paginados")
 	@GetMapping
 	public Page<ContactResponseDTO> getAllContacts(Pageable pageable) {
-		return contactRepository.findAll(pageable)
-				.map(contact -> modelMapper.map(contact, ContactResponseDTO.class));
+		return contactRepository.findAll(pageable).map(contact -> modelMapper.map(contact, ContactResponseDTO.class));
 	}
 
 	/**
@@ -77,22 +79,24 @@ public class ContactController {
 	 *               de acesso: GET /api/contacts/1
 	 */
 
+    @Operation(summary = "Buscar contatos por ID")
 	@GetMapping("/{id}")
 	public ContactResponseDTO getContactById(@PathVariable Long id) {
-		return contactRepository.findById(id)
-				.map(contact -> modelMapper.map(contact, ContactResponseDTO.class))
-				.orElseThrow(() -> new RuntimeException("Contato não encontrado: " + id));
+		Contact contact = contactRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Contato não encontrado: " + id));
+		return modelMapper.map(contact, ContactResponseDTO.class);
 	}
-	
+    
+    @Operation(summary = "Buscar os endereços do cliente via ID")
 	@GetMapping("/{id}/addresses")
 	public List<AddressResponseDTO> getContactAddressesById(@PathVariable Long id, Pageable pegeable) {
-	    Contact contact = contactRepository.findById(id)
-	    	.orElseThrow(() -> new RuntimeException("Contato não encontrado: " + id));
-	            
-	    return contact.getAddresses().stream() // stream pois lista nao tem .map
-	    		.map(address -> modelMapper.map(address, AddressResponseDTO.class)) // mapeia cada Addr para DTO
-	            .collect(Collectors.toList()); // converte de volta para lista
-	            
+		Contact contact = contactRepository.findById(id)
+				.orElseThrow(() -> new RuntimeException("Contato não encontrado: " + id));
+
+		return contact.getAddresses().stream() // stream pois lista nao tem .map
+				.map(address -> modelMapper.map(address, AddressResponseDTO.class)) // mapeia cada Addr para DTO
+				.collect(Collectors.toList()); // converte de volta para lista
+
 	}
 
 	/**
@@ -110,6 +114,7 @@ public class ContactController {
 	 *               (Lower or Upper case)
 	 */
 
+    @Operation(summary = "Buscar os clientes pelo nome")
 	@GetMapping("/search")
 	public Page<ContactResponseDTO> getContactByName(@RequestParam String name, Pageable pageable) {
 		return contactRepository.findByNomeContainingIgnoreCase(name, pageable)
@@ -123,17 +128,31 @@ public class ContactController {
 	 * @RequestBody indica que o objeto Contact será preenchido com os dados JSON
 	 *              enviados no corpo da requisição.
 	 */
-	
+
+    @Operation(summary = "Criar um novo contato")
 	@PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
+	@ResponseStatus(HttpStatus.CREATED)
 	public ContactResponseDTO createContact(@RequestBody @Valid ContactRequestDTO contactRequestDTO) {
-		// Converte o DTO para entidade
-		Contact contact = modelMapper.map(contactRequestDTO, Contact.class);
+		// Mapeia os campos simples
+		Contact contact = new Contact(contactRequestDTO.getNome(), contactRequestDTO.getTelefone(), contactRequestDTO.getEmail());
+
+        // Mapeia os endereços manualmente
+		var addresses = contactRequestDTO.getAddresses().stream()
+			    .map(addrDto -> {
+			        Address address = new Address();
+			        address.setRua(addrDto.getRua());
+			        address.setCidade(addrDto.getCidade());
+			        address.setEstado(addrDto.getEstado());
+			        address.setCep(addrDto.getCep());
+			        address.setContact(contact); 
+			        return address;
+			    }).toList();
 		
-		// Salva no banco
+		contact.setAddresses(addresses);
+		
 		Contact savedContact = contactRepository.save(contact);
-		
 		// Converte a entidade salva para DTO de resposta
+		
 		return modelMapper.map(savedContact, ContactResponseDTO.class);
 	}
 
@@ -143,8 +162,11 @@ public class ContactController {
 	 * @PutMapping indica que este método responde a chamadas HTTP PUT. Exemplo de
 	 *             acesso: PUT /api/contacts/1
 	 */
+    
+    @Operation(summary = "Atualizar o cliente via ID")
 	@PutMapping("/{id}")
-	public ContactResponseDTO updateContact(@PathVariable Long id, @RequestBody @Valid ContactRequestDTO contactRequestDTO) {
+	public ContactResponseDTO updateContact(@PathVariable Long id,
+			@RequestBody @Valid ContactRequestDTO contactRequestDTO) {
 		// Buscar o contato existente
 		Contact existingContact = contactRepository.findById(id)
 				.orElseThrow(() -> new RuntimeException("Contato não encontrado: " + id));
@@ -152,7 +174,6 @@ public class ContactController {
 		// Converte o DTO para entidade
 		Contact contact = modelMapper.map(contactRequestDTO, Contact.class);
 
-		
 		// Atualizar os campos
 		existingContact.setNome(contact.getNome());
 		existingContact.setTelefone(contact.getTelefone());
@@ -160,7 +181,7 @@ public class ContactController {
 
 		// Salvar alterações
 		Contact savedContact = contactRepository.save(existingContact);
-		
+
 		// retorna DTO de resposta com os dados atualizados
 		return modelMapper.map(savedContact, ContactResponseDTO.class);
 	}
@@ -171,6 +192,7 @@ public class ContactController {
 	 * @DeleteMapping indica que este método responde a chamadas HTTP DELETE.
 	 *                Exemplo de acesso: DELETE /api/contacts/1
 	 */
+    @Operation(summary = "Deletar o cliente pelo ID")
 	@DeleteMapping("/{id}")
 	public void deleteContact(@PathVariable Long id) {
 		contactRepository.deleteById(id);
@@ -186,17 +208,20 @@ public class ContactController {
 	 *               encontrado, o valor é atualizado de acordo com o passado.
 	 * 
 	 */
+    @Operation(summary = "Atualizar parcialmente o cliente")
 	@PatchMapping("/{id}")
-	public ContactResponseDTO updateContactFields(@PathVariable Long id, @RequestBody @Valid ContactPatchDTO contactPatchDTO) {
+	public ContactResponseDTO updateContactFields(@PathVariable Long id,
+			@RequestBody @Valid ContactPatchDTO contactPatchDTO) {
 		// Buscar o contato existente
 		Contact existingContact = contactRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Contato não encontrado com o ID: " + id));
 
 		// Atualizar apenas os campos que estiverem presentes no DTO
-	    contactPatchDTO.getNome().ifPresent(existingContact::setNome);
-	    contactPatchDTO.getEmail().ifPresent(existingContact::setEmail);
-	    contactPatchDTO.getTelefone().ifPresent(existingContact::setTelefone);
+		contactPatchDTO.getNome().ifPresent(existingContact::setNome);
+		contactPatchDTO.getEmail().ifPresent(existingContact::setEmail);
+		contactPatchDTO.getTelefone().ifPresent(existingContact::setTelefone);
 
-	    Contact savedContact = contactRepository.save(existingContact);
-	    return modelMapper.map(savedContact, ContactResponseDTO.class);	}
+		Contact savedContact = contactRepository.save(existingContact);
+		return modelMapper.map(savedContact, ContactResponseDTO.class);
+	}
 }
