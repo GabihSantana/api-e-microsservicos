@@ -2,6 +2,8 @@ package br.ifsp.todolist.model;
 
 import java.time.LocalDate;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import br.ifsp.todolist.constraints.DataNoFuturo;
@@ -37,9 +39,10 @@ public class Tarefa {
 	private String descricao;
 	
 	@Enumerated(EnumType.STRING)
-	@NotNull(message = "A prioridade é obrigatória")
+    @NotNull(message = "A prioridade é obrigatória")
 	private PrioridadeTarefa prioridade;
 	
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	@DataNoFuturo
 	private LocalDate dataLimite;

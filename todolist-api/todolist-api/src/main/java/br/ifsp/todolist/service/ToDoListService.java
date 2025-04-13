@@ -1,13 +1,15 @@
 package br.ifsp.todolist.service;
 
+import java.util.SortedMap;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import br.ifsp.todolist.model.Tarefa;
@@ -17,8 +19,6 @@ import br.ifsp.todolist.dto.TarefaRequestDTO;
 import br.ifsp.todolist.dto.TarefaResponseDTO;
 import br.ifsp.todolist.exception.InvalidTaskStateException;
 import br.ifsp.todolist.repository.ToDoListRepository;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import jakarta.validation.Valid;
 
 @Service
 public class ToDoListService {
@@ -29,7 +29,7 @@ public class ToDoListService {
 	private ModelMapper modelMapper;
 
 	// post
-	public TarefaResponseDTO createTask(@RequestBody @Valid TarefaRequestDTO tarefaRequestDTO) {
+	public TarefaResponseDTO createTask(TarefaRequestDTO tarefaRequestDTO) {
 		Tarefa tarefa = new Tarefa(tarefaRequestDTO.getTitulo(), tarefaRequestDTO.getDescricao(),
 				tarefaRequestDTO.getPrioridade(), tarefaRequestDTO.getDataLimite(), tarefaRequestDTO.getConcluida(),
 				tarefaRequestDTO.getCategoria());
@@ -40,25 +40,26 @@ public class ToDoListService {
 	}
 
 	// get
-	public Page<TarefaResponseDTO> getAllTasks(Pageable pageable) {
+	public Page<TarefaResponseDTO> getAllTasks(int page, int size, String sort) {
+		Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
 		return toDoListRepository.findAll(pageable).map(tarefa -> modelMapper.map(tarefa, TarefaResponseDTO.class));
 	}
 
 	// get por ID
-	public TarefaResponseDTO getTasksById(@PathVariable Long id) {
+	public TarefaResponseDTO getTasksById(Long id) {
 		Tarefa tarefa = toDoListRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Tarefa não encontrada: " + id));
 		return modelMapper.map(tarefa, TarefaResponseDTO.class);
 	}
 
 	// get por Categoria
-	public Page<TarefaResponseDTO> getTaskByCategoria(@RequestParam String categoria, Pageable pageable) {
+	public Page<TarefaResponseDTO> getTaskByCategoria(String categoria, Pageable pageable) {
 		return toDoListRepository.findByCategoriaContainingIgnoreCase(categoria, pageable)
 				.map(tarefa -> modelMapper.map(tarefa, TarefaResponseDTO.class));
 	}
 
 	// patch
-	public TarefaResponseDTO updateTaskField(@PathVariable Long id, @RequestBody TarefaPatchDTO tarefaPatchDTO) {
+	public TarefaResponseDTO updateTaskField(Long id, TarefaPatchDTO tarefaPatchDTO) {
 		Tarefa tarefa = toDoListRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Tarefa não encontrada: " + id));
 
@@ -79,7 +80,7 @@ public class ToDoListService {
 	}
 	
 	// patch status tarefa
-	public TarefaResponseDTO updateTaskStatus(@PathVariable Long id, @RequestBody TarefaPatchDTO tarefaPatchDTO) {
+	public TarefaResponseDTO updateTaskStatus(Long id, TarefaPatchDTO tarefaPatchDTO) {
 		Tarefa tarefa = toDoListRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Tarefa não encontrada: " + id));
 
@@ -95,7 +96,7 @@ public class ToDoListService {
 	}
 
 	// put
-	public TarefaResponseDTO updateTask(@PathVariable Long id, @RequestBody @Valid TarefaRequestDTO tarefaRequestDTO) {
+	public TarefaResponseDTO updateTask(Long id, TarefaRequestDTO tarefaRequestDTO) {
 		Tarefa tarefa = toDoListRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Tarefa não encontrada: " + id));
 
@@ -107,7 +108,7 @@ public class ToDoListService {
 	}
 	
 	// delete
-	public void deleteTask(@PathVariable Long id) {
+	public void deleteTask(Long id) {
 		toDoListRepository.deleteById(id);
 	}
 

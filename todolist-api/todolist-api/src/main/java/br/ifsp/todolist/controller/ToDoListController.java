@@ -34,14 +34,16 @@ public class ToDoListController {
 	@PostMapping
 	@Operation(summary = "Criar uma nova tarefa")
 	@ResponseStatus(HttpStatus.CREATED)
-	public TarefaResponseDTO createTarefa(@RequestBody @Valid TarefaRequestDTO tarefaRequestDTO) {
+	public TarefaResponseDTO createTarefa(@Valid @RequestBody TarefaRequestDTO tarefaRequestDTO) {
 		return toDoListService.createTask(tarefaRequestDTO);
 	}
 
 	@GetMapping
 	@Operation(summary = "Listar tarefas com paginação")
-	public Page<TarefaResponseDTO> getAllTarefas(Pageable pageable) {
-		return toDoListService.getAllTasks(pageable);
+	public Page<TarefaResponseDTO> getAllTarefas(@RequestParam(defaultValue = "0") int page,
+												@RequestParam(defaultValue = "10") int size,
+												@RequestParam(defaultValue = "prioridade") String sort) {
+		return toDoListService.getAllTasks(page, size, sort);
 	}
 
 	@GetMapping("/{id}")
@@ -70,7 +72,7 @@ public class ToDoListController {
 
 	@PutMapping("/{id}")
 	@Operation(summary = "Atualização completa da tarefa")
-	public TarefaResponseDTO updateTask(@PathVariable Long id, @RequestBody @Valid TarefaRequestDTO tarefaRequestDTO) {
+	public TarefaResponseDTO updateTask(@PathVariable Long id, @Valid @RequestBody TarefaRequestDTO tarefaRequestDTO) {
 		return toDoListService.updateTask(id, tarefaRequestDTO);
 	}
 
