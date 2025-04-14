@@ -1,7 +1,5 @@
 package br.ifsp.todolist.service;
 
-import java.util.SortedMap;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -109,7 +107,14 @@ public class ToDoListService {
 	
 	// delete
 	public void deleteTask(Long id) {
-		toDoListRepository.deleteById(id);
+		Tarefa tarefa = toDoListRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Tarefa não encontrada: " + id));
+		
+		if (Boolean.TRUE.equals(tarefa.getConcluida())) {
+			throw new InvalidTaskStateException("Tarefas concluídas não podem ser deletadas.");
+		}else {
+			toDoListRepository.deleteById(id);
+		}
 	}
 
 }

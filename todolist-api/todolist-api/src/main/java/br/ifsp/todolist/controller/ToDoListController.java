@@ -34,13 +34,13 @@ public class ToDoListController {
 	@PostMapping
 	@Operation(summary = "Criar uma nova tarefa")
 	@ResponseStatus(HttpStatus.CREATED)
-	public TarefaResponseDTO createTarefa(@Valid @RequestBody TarefaRequestDTO tarefaRequestDTO) {
+	public TarefaResponseDTO createTask(@Valid @RequestBody TarefaRequestDTO tarefaRequestDTO) {
 		return toDoListService.createTask(tarefaRequestDTO);
 	}
 
 	@GetMapping
 	@Operation(summary = "Listar tarefas com paginação")
-	public Page<TarefaResponseDTO> getAllTarefas(@RequestParam(defaultValue = "0") int page,
+	public Page<TarefaResponseDTO> getAllTasks(@RequestParam(defaultValue = "0") int page,
 												@RequestParam(defaultValue = "10") int size,
 												@RequestParam(defaultValue = "prioridade") String sort) {
 		return toDoListService.getAllTasks(page, size, sort);
