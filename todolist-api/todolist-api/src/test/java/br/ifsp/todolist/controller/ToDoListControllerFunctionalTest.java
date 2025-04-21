@@ -1,5 +1,7 @@
 package br.ifsp.todolist.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -45,7 +47,7 @@ public class ToDoListControllerFunctionalTest {
 	
 	@Test
 	@DisplayName("Create a new task with an invalid data field")
-	void testCreateInvalidTask_Error() throws Exception {
+	void testCreateInvalidTask_BadRequest() throws Exception {
 		String json = """
 		 		{
 		 			"titulo": "Revisar API",
@@ -64,4 +66,68 @@ public class ToDoListControllerFunctionalTest {
 		 		 .andExpect(status().isBadRequest());
 	}
 	
+	@Test
+	@DisplayName("Try to delete a completed task")
+	void testDeleteACompletedTask_Error409() throws Exception {
+		String json = """
+		 		{
+		 			"titulo": "Revisar API",
+		 			"descricao": "Revisar todos os endpoints da API",
+		 			"prioridade": "ALTA",
+		 			"dataLimite": "24/12/2025",
+		 			"concluida": true,
+		 			"categoria": "Estudos"
+		 		}
+		 	""";
+		
+		mockMvc.perform(post("/api/tasks")
+				 .contentType("application/json")
+				 .content(json))
+				 .andExpect(status().isCreated());
+		
+		mockMvc.perform(delete("/api/tasks/1")
+				.contentType("application/json"))
+				.andDo(print())
+				.andExpect(status().isConflict());
+	}
+	
+	@Test
+	@DisplayName("List tasks with pagination")
+	void testListTasksWithPagination() throws Exception {
+		mockMvc.perform(get("/api/tasks")
+				.param("page", "0")
+				.param("size", "5")
+				.contentType("application/json"))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.content").isArray());
+	}
+	
+	@Test
+	@DisplayName("Search tasks by category")
+	void testSearchTasksByCategory() throws Exception {
+		String json = """
+		 		{
+		 			"titulo": "Revisar API",
+		 			"descricao": "Revisar todos os endpoints da API",
+		 			"prioridade": "ALTA",
+		 			"dataLimite": "24/12/2025",
+		 			"concluida": true,
+		 			"categoria": "Estudos"
+		 		}
+		 	""";
+		mockMvc.perform(post("/api/tasks")
+				 .contentType("application/json")
+				 .content(json))
+				 .andExpect(status().isCreated());
+		
+		mockMvc.perform(get("/api/tasks/search")
+		        .param("categoria", "Estudos")
+		        .param("page", "0")
+		        .param("size", "10")
+		        .contentType("application/json"))
+		        .andDo(print())
+		        .andExpect(status().isOk())
+		        .andExpect(jsonPath("$.content").isArray());
+	}
 }

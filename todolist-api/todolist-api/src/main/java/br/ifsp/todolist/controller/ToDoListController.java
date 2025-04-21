@@ -117,6 +117,7 @@ public class ToDoListController {
 		})
 	@GetMapping("/search")
 	public ResponseEntity<Page<TarefaResponseDTO>> getTaskByCategoria(@RequestParam String categoria, Pageable pageable) {
+	    System.out.println("Categoria recebida: " + categoria);
 		Page<TarefaResponseDTO> responseDTO = toDoListService.getTaskByCategoria(categoria, pageable);
 		return ResponseEntity.ok(responseDTO);
 	}
