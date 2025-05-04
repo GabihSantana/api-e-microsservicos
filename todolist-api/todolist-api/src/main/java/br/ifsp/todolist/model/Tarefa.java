@@ -17,6 +17,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,8 +35,10 @@ public class Tarefa {
 	private Long id;
 	
 	@NotBlank(message="O título não pode estar em branco!")
+    @Size(min = 10, max = 100)
 	private String titulo;
 	
+    @Size(max = 255)
 	private String descricao;
 	
 	@Enumerated(EnumType.STRING)

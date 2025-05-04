@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.ifsp.todolist.dto.TarefaPatchDTO;
 import br.ifsp.todolist.dto.TarefaRequestDTO;
 import br.ifsp.todolist.dto.TarefaResponseDTO;
+import br.ifsp.todolist.dto.task.PagedResponse;
 import br.ifsp.todolist.service.ToDoListService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -74,12 +75,8 @@ public class ToDoListController {
 		    @ApiResponse(responseCode = "403", description = "Acesso negado", content = @Content)
 		})
 	@GetMapping
-	public ResponseEntity<Page<TarefaResponseDTO>> getAllTasks(@RequestParam(defaultValue = "0") int page,
-												@RequestParam(defaultValue = "10") int size,
-												@RequestParam(defaultValue = "prioridade") String sort) {
-		
-		Page<TarefaResponseDTO> responseDTO = toDoListService.getAllTasks(page, size, sort);
-		return ResponseEntity.ok(responseDTO);
+	public ResponseEntity<PagedResponse<TarefaResponseDTO>> getAllTasks(Pageable pageable) {
+		return ResponseEntity.ok(toDoListService.getAllTasks(pageable));
 	}
 
 	/**
@@ -97,8 +94,7 @@ public class ToDoListController {
 		})
 	@GetMapping("/{id}")
 	public ResponseEntity<TarefaResponseDTO> getTasksById(@PathVariable Long id) {
-		TarefaResponseDTO responseDTO = toDoListService.getTasksById(id);
-		return ResponseEntity.ok(responseDTO);
+		return ResponseEntity.ok(toDoListService.getTasksById(id));
 	}
 
 	/**
@@ -116,10 +112,8 @@ public class ToDoListController {
 		    @ApiResponse(responseCode = "403", description = "Acesso negado", content = @Content)
 		})
 	@GetMapping("/search")
-	public ResponseEntity<Page<TarefaResponseDTO>> getTaskByCategoria(@RequestParam String categoria, Pageable pageable) {
-	    System.out.println("Categoria recebida: " + categoria);
-		Page<TarefaResponseDTO> responseDTO = toDoListService.getTaskByCategoria(categoria, pageable);
-		return ResponseEntity.ok(responseDTO);
+	public ResponseEntity<PagedResponse<TarefaResponseDTO>> getTaskByCategoria(@RequestParam String categoria, Pageable pageable) {
+		return ResponseEntity.ok(toDoListService.getTaskByCategoria(categoria, pageable));
 	}
 
 	/**
@@ -151,9 +145,8 @@ public class ToDoListController {
 		    @ApiResponse(responseCode = "403", description = "Acesso negado", content = @Content)
 		})
 	@PatchMapping("/{id}/concluir")
-	public ResponseEntity<TarefaResponseDTO> updateTaskStatus(@PathVariable Long id, @RequestBody TarefaPatchDTO tarefaPatchDTO) {
-		TarefaResponseDTO responseDTO = toDoListService.updateTaskStatus(id, tarefaPatchDTO);
-		return ResponseEntity.ok(responseDTO);
+	public ResponseEntity<TarefaResponseDTO> updateTaskStatus(@PathVariable Long id) {
+		return ResponseEntity.ok(toDoListService.updateTaskStatus(id));
 	}
 
 	/**

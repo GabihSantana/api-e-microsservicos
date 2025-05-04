@@ -13,6 +13,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,13 +27,14 @@ public class TarefaRequestDTO {
 	
 	@Schema(description = "Título da tarefa", example = "Estudar Spring Boot")
     @NotBlank(message = "O título não pode estar em branco!")
+    @Size(min = 10, max = 100)
     private String titulo;
 
 	@Schema(description = "Descrição detalhada da tarefa", example = "Fazer anotações sobre JPA e Hibernate")
+    @Size(max = 255)
     private String descricao;
 
 	@Schema(description = "Prioridade da tarefa (ALTA, MEDIA, BAIXA)", example = "ALTA")
-	@Enumerated(EnumType.STRING)
     @NotNull(message = "A prioridade é obrigatória")
     private PrioridadeTarefa prioridade;
 

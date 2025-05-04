@@ -1,4 +1,4 @@
-CREATE TABLE tarefa(
+CREATE TABLE IF NOT EXISTS TAREFA(
 	id BIGINT PRIMARY KEY AUTO_INCREMENT,
     titulo VARCHAR(255) NOT NULL,
     descricao VARCHAR(255),
@@ -7,4 +7,9 @@ CREATE TABLE tarefa(
     concluida BOOLEAN DEFAULT FALSE,
     categoria VARCHAR(255) NOT NULL,
     criada_em DATE
+);
+
+CREATE TABLE IF NOT EXISTS USER(
+	username VARCHAR(255) NOT NULL primary key,
+	password VARCHAR(255) NOT NULL
 );

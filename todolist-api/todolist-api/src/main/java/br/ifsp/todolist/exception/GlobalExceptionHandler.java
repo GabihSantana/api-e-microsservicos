@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 	/**
-	 * Trata exceções de recurso não encontrado (404)
+	 * Trata exceções de recursos não encontrados (404)
 	 */
 	@ExceptionHandler(ResourceNotFoundException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)
@@ -33,15 +33,13 @@ public class GlobalExceptionHandler {
 	}
 
 	/**
-	 * Trata exceções quando há tentativa de modificar tarefas concluídas (409)
+	 * Trata exceções quando há tentativa de modificar tarefas concluídas (409) - Operação solicitada nao é permitida
 	 */
-	@ExceptionHandler(InvalidTaskStateException.class)
-	@ResponseStatus(HttpStatus.CONFLICT)
-	public ResponseEntity<Map<String, String>> handleTarefaConcluidaException(InvalidTaskStateException exception) {
-		Map<String, String> errorResponse = new HashMap<>();
-		errorResponse.put("message", exception.getMessage());
-		return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
-	}
+    @ExceptionHandler(InvalidTaskStateException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidTaskStateException(InvalidTaskStateException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
 
 	/**
 	 * Retorna o erro 400 com mensagens amigáveis
@@ -92,6 +90,11 @@ public class GlobalExceptionHandler {
 	    errorResponse.put("error", "Dados inválidos no corpo da requisição. Verifique os campos enviados.");
 	    return ResponseEntity.badRequest().body(errorResponse);
 	}
-
-
+	
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+    
 }
