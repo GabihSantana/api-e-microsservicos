@@ -1,41 +1,40 @@
 package br.ifsp.todolist.service;
 
 import java.time.Instant;
-import java.util.stream.Collectors;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
+import br.ifsp.todolist.model.User;
+
+/**
+ * Responsavel por gerar tokens JWT válidos a partir das informações de um usuário autenticado
+ */
+
 @Service
 public class JwtService {
-	private final JwtEncoder encoder;
+	private final JwtEncoder jwtEncoder;
 
 	public JwtService(JwtEncoder encoder) {
 		super();
-		this.encoder = encoder;
+		this.jwtEncoder = encoder;
 	}
 	
-	public String generateToken(Authentication authentication) {
+	public String generateToken(User user) {
 		Instant now = Instant.now();
-		long expiry = 3600L;
+		long expire = 3600L;
 		
-		String scopes = authentication.getAuthorities().stream()
-				.map(GrantedAuthority::getAuthority)
-				.collect(Collectors.joining(""));
-		
-		var claims = JwtClaimsSet.builder()
-				.issuer("spring-security-jwt")
-				.issuedAt(now)
-				.expiresAt(now.plusSeconds(expiry))
-				.subject(authentication.getName())
-				.claim("scope", scopes)
-				.build();
-		
-		return encoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+		  var claims = JwtClaimsSet.builder()
+	                .issuer("spring-security")
+	                .issuedAt(now)
+	                .expiresAt(now.plusSeconds(expire))
+	                .subject(user.getUsername())
+	                .claim("userId", user.getId())
+	                .build();
+	    
+	        return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
 		
 	}
 		
