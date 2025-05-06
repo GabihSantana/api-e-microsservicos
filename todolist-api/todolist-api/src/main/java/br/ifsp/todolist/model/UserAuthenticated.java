@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public class UserAuthenticated implements UserDetails {
@@ -18,18 +19,22 @@ public class UserAuthenticated implements UserDetails {
 		return user;
 	}
 	
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return List.of(() -> "read");
-	}
-/*
+	/*
+	 * Quando o SpringSecurity verificar as "Roles" que o usuario tem
+	 */
+	
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return 
+    	
+    	if(user.getRoles() == Role.ADMIN) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"),
+    											new SimpleGrantedAuthority("ROLE_USER"));
+    	
+    	else return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        /* return 
         		user.getRoles().stream()
                 .map(role -> (GrantedAuthority) () -> role.getRoleName().name())
-                .toList();
-    }*/
+                .toList(); */
+    }
 
 	@Override
 	public String getPassword() {
