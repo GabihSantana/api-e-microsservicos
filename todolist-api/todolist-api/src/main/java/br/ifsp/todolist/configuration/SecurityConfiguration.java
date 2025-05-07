@@ -45,11 +45,12 @@ public class SecurityConfiguration {
         return new CustomJwtAuthenticationConverter();
     }
 	
+    // Corrente de filtros de segurança: - Métodos para fazer validações do usuário - ver se está apto para realizar a requisição ou nao
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http, 
 				CustomJwtAuthenticationConverter customJwtAuthenticationConverter) throws Exception {
 		http.csrf(csrf -> csrf.disable()) // desativa proteção contra CSRF - aplicação é stateless (sem sessão)
-			.authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/**").permitAll() // login emissão de tokens
+			.authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/**").permitAll() // quais requisições HTTP deverão ser autenticadas
 					.requestMatchers("/api/users/register").permitAll().anyRequest().authenticated()) // registro de novos users
 			.oauth2ResourceServer(
                     conf -> conf.jwt(jwt -> jwt.jwtAuthenticationConverter(customJwtAuthenticationConverter)))
